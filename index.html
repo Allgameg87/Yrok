@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Тестирование функций</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+        }
+        .test-section {
+            margin: 30px 0;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        button {
+            padding: 10px 20px;
+            margin: 5px;
+            cursor: pointer;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 4px;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        #myElement {
+            padding: 20px;
+            margin: 20px 0;
+            background-color: #f0f0f0;
+            border: 2px solid #ccc;
+            border-radius: 5px;
+            transition: all 0.3s ease;
+        }
+        .result {
+            margin-top: 10px;
+            padding: 10px;
+            background-color: #f8f9fa;
+            border-radius: 4px;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        input {
+            padding: 5px;
+            margin: 5px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Тестирование функций</h1>
+    
+    <!-- Задание 1: Получение данных о пользователе -->
+    <div class="test-section">
+        <h2>Задание 1: Получение данных о пользователе</h2>
+        <p>Введите ID пользователя (1-10):</p>
+        <input type="number" id="userIdInput" value="1" min="1" max="10" style="padding: 5px; margin: 5px;">
+        <button onclick="testGetUserData()">Получить данные пользователя</button>
+        <button onclick="testGetUserData(999)">Тест ошибки (несуществующий ID)</button>
+        <div id="userDataResult" class="result"></div>
+    </div>
+    
+    <!-- Задание 2: Отправка данных на сервер -->
+    <div class="test-section">
+        <h2>Задание 2: Отправка данных на сервер</h2>
+        <button onclick="testSaveUserData()">Тест saveUserData</button>
+        <div id="saveDataResult" class="result"></div>
+    </div>
+    
+    <!-- Задание 3: Изменение стиля элемента -->
+    <div class="test-section">
+        <h2>Задание 3: Изменение стиля элемента через заданное время</h2>
+        <div id="myElement">Этот элемент изменит стиль через 2 секунды после нажатия кнопки</div>
+        <button onclick="testChangeStyleDelayed()">Тест changeStyleDelayed (2 секунды)</button>
+    </div>
+    
+    <script src="functions.js"></script>
+    <script>
+        // Тест функции getUserData
+        async function testGetUserData(userId = null) {
+            const resultDiv = document.getElementById('userDataResult');
+            resultDiv.textContent = 'Загрузка данных с сервера...';
+            resultDiv.style.color = 'black';
+            
+            // Если userId не передан, берем из input
+            if (userId === null) {
+                userId = parseInt(document.getElementById('userIdInput').value) || 1;
+            }
+            
+            getUserData(userId)
+                .then(user => {
+                    resultDiv.textContent = '✅ Данные успешно получены с сервера!\n\n' + 
+                        'Данные пользователя:\n' + 
+                        JSON.stringify(user, null, 2) + 
+                        '\n\n---\n' +
+                        'Информация о пользователе:\n' +
+                        `Имя: ${user.name}\n` +
+                        `Email: ${user.email}\n` +
+                        `Телефон: ${user.phone}\n` +
+                        `Веб-сайт: ${user.website}\n` +
+                        `Город: ${user.address.city}\n` +
+                        `Компания: ${user.company.name}`;
+                    resultDiv.style.color = 'green';
+                })
+                .catch(error => {
+                    resultDiv.textContent = '❌ Ошибка при получении данных:\n' + error;
+                    resultDiv.style.color = 'red';
+                });
+        }
+        
+        // Тест функции saveUserData
+        async function testSaveUserData() {
+            const resultDiv = document.getElementById('saveDataResult');
+            resultDiv.textContent = 'Отправка данных на сервер...';
+            resultDiv.style.color = 'black';
+            
+            const user = {
+                name: 'John Smith',
+                age: 30,
+                email: 'john@example.com'
+            };
+            
+            saveUserData(user)
+                .then((savedData) => {
+                    resultDiv.textContent = '✅ Данные успешно отправлены на сервер!\n\n' +
+                        'Отправленные данные:\n' +
+                        JSON.stringify(user, null, 2) + 
+                        '\n\n---\n' +
+                        'Ответ от сервера:\n' +
+                        JSON.stringify(savedData, null, 2) +
+                        '\n\n(Примечание: JSONPlaceholder возвращает созданный объект с добавленным ID)';
+                    resultDiv.style.color = 'green';
+                })
+                .catch(error => {
+                    resultDiv.textContent = '❌ Ошибка при отправке данных:\n' + error;
+                    resultDiv.style.color = 'red';
+                });
+        }
+        
+        // Тест функции changeStyleDelayed
+        function testChangeStyleDelayed() {
+            const element = document.getElementById('myElement');
+            // Сброс стиля перед тестом
+            element.style.backgroundColor = '#f0f0f0';
+            element.style.color = 'black';
+            element.style.padding = '20px';
+            element.style.borderRadius = '5px';
+            
+            changeStyleDelayed('myElement', 2000);
+        }
+    </script>
+</body>
+</html>
+
